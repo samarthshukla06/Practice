@@ -1,0 +1,101 @@
+<table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Name</th>
+                <th>Brand</th>
+                <th>Made In</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="product" items="${listProducts}">
+        
+         <!-- construct an "update" link with product id -->
+                            <c:url var="updateLink" value="/edit">
+                                <c:param name="id" value="${product.id}" />
+                            </c:url>
+
+ 
+
+                            <!-- construct an "delete" link with customer id -->
+                            <c:url var="deleteLink" value="/delete">
+                                <c:param name="id" value="${product.id}" />
+                            </c:url>
+        
+            <tr>
+                <td>${product.id}</td>
+                <td>${product.name}</td> 
+                <td>${product.brand}</td>
+                <td>${product.madein}</td>
+                <td>${product.price}</td>
+                <td>
+                       <!-- display the update link --> 
+                            <!--         <a href="${updateLink}">Update</a>
+                                    | <a href="${deleteLink}"
+                                    onclick="if (!(confirm('Are you sure you want to delete this Product?'))) return false">Delete</a>
+                </td>
+                -->
+            </tr>
+             </c:forEach>
+        </tbody>
+    </table>
+ 
+ 
+ @RequestMapping("/edit")
+    public ModelAndView showEditProductPage(@RequestParam("id") int id) {
+        ModelAndView mav = new ModelAndView("edit_product");
+        Product product = service.get(id);
+        mav.addObject("product", product);
+        return mav;
+    }
+    
+    
+     <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+     
+     
+     <div align="center">
+        <h1>Edit Product</h1>
+        <br />
+         <form:form id="productform" action="save" method="post" modelAttribute="product">
+       
+
+            <table border="0" cellpadding="10">
+                <tr>            
+                    <td>Product ID:</td>
+                    <td>
+                        <input type="text" name="id" value=${product.id} readonly="readonly" />
+                    </td>
+                </tr>       
+                <tr>            
+                    <td>Product Name:</td>
+                    <td>
+                        <input type="text" name="name" value=${product.name} >
+                    </td>
+                </tr>
+                <tr>
+                    <td>Brand:</td>
+                    <td><input type="text" name="brand" value=${product.brand}></td>
+                </tr>
+                <tr>
+                    <td>Made In:</td>
+                    <td><input type="text" name="madein" value=${product.madein} ></td>
+                </tr>
+                <tr>
+                    <td>Price:</td>
+                    <td><input type="text" name="price" value=${product.price}></td>
+                </tr>                           
+                <tr>
+                    <td colspan="2"><button type="submit">Save</button> </td>
+                </tr>
+            </table>
+       </form:form>
+    </div>
+    
+    
+    @RequestMapping("/delete")
+    public String deleteProduct(@RequestParam("id") int id) {
+        service.delete(id);
+        return "redirect:products";      
+    }
